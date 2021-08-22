@@ -25,6 +25,11 @@ MACHINES = {
                         :dfile => './sata4.vdi',
                         :size => 250, # Megabytes
                         :port => 4
+                },
+                :sata5 => {
+                        :dfile => './sata5.vdi',
+                        :size => 250,
+                        :port => 5
                 }
 
 	}
@@ -41,6 +46,7 @@ Vagrant.configure("2") do |config|
 
           box.vm.box = boxconfig[:box_name]
           box.vm.host_name = boxname.to_s
+          box.vm.synced_folder '.', '/vagrant', disabled: true
 
           #box.vm.network "forwarded_port", guest: 3260, host: 3260+offset
 
@@ -63,12 +69,7 @@ Vagrant.configure("2") do |config|
                      end
                   end
           end
- 	  box.vm.provision "shell", inline: <<-SHELL
-	      mkdir -p ~root/.ssh
-              cp ~vagrant/.ssh/auth* ~root/.ssh
-	      yum install -y mdadm smartmontools hdparm gdisk
-  	  SHELL
-
+ 	  box.vm.provision "shell", path: "bootstrap.sh"
       end
   end
 end
